@@ -40,6 +40,12 @@ void error_handling(char * msg);
 int clnt_cnt=0;
 pthread_mutex_t mutx;
 
+
+
+
+
+
+
 int main(int argc, char *argv[])
 {
 	int serv_sock, clnt_sock;
@@ -53,25 +59,7 @@ int main(int argc, char *argv[])
 	char *pToken;						//passing temp save
 	char *pArray[ARR_CNT]={0};			//passing adress
 	char msg[BUF_SIZE];				//mesage
-/*
-	CLIENT_INFO client_info[MAX_CLNT] = {{0,0,"","1","PASSWD"}, \
-			 {0,0,"","2","PASSWD"},  {0,0,"","3","PASSWD"}, \
-			 {0,0,"","4","PASSWD"},  {0,0,"","5","PASSWD"}, \
-			 {0,0,"","6","PASSWD"},  {0,0,"","7","PASSWD"}, \
-			 {0,0,"","8","PASSWD"},  {0,0,"","9","PASSWD"}, \
-			 {0,0,"","10","PASSWD"},  {0,0,"","11","PASSWD"}, \
-			 {0,0,"","12","PASSWD"},  {0,0,"","13","PASSWD"}, \
-			 {0,0,"","14","PASSWD"},  {0,0,"","15","PASSWD"}, \
-			 {0,0,"","16","PASSWD"},  {0,0,"","17","PASSWD"}, \
-			 {0,0,"","18","PASSWD"},  {0,0,"","19","PASSWD"}, \
-			 {0,0,"","20","PASSWD"},  {0,0,"","21","PASSWD"}, \
-			 {0,0,"","22","PASSWD"},  {0,0,"","23","PASSWD"}, \
-			 {0,0,"","24","PASSWD"},  {0,0,"","25","PASSWD"}, \
-			 {0,0,"","26","PASSWD"},  {0,0,"","27","PASSWD"}, \
-			 {0,0,"","28","PASSWD"},  {0,0,"","29","PASSWD"}, \
-			 {0,0,"","30","PASSWD"},  {0,0,"","31","PASSWD"}, \
-			 {0,0,"","pdh","PASSWD"}};
-*/
+	
 	CLIENT_INFO client_info[MAX_CLNT];
 
 	if(argc != 2) {
