@@ -1,0 +1,77 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ARR_CNT	back/client.c	13;"	d	file:
+ARR_CNT	back/iot_server.c	17;"	d	file:
+ARR_CNT	back/server.c	12;"	d	file:
+ARR_CNT	inc/server_sock.h	13;"	d
+BUF_SIZE	back/client.c	11;"	d	file:
+BUF_SIZE	back/iot_server.c	14;"	d	file:
+BUF_SIZE	back/server.c	9;"	d	file:
+BUF_SIZE	inc/server_sock.h	10;"	d
+CC	Makefile	/^CC:=gcc$/;"	m
+CLIENT_INFO	back/iot_server.c	/^}CLIENT_INFO;$/;"	t	typeref:struct:__anon2	file:
+CLIENT_INFO	back/server.c	/^}CLIENT_INFO;$/;"	t	typeref:struct:__anon3	file:
+CLIENT_INFO	inc/server_sock.h	/^}CLIENT_INFO;$/;"	t	typeref:struct:__anon4
+DEBUG	back/iot_server.c	19;"	d	file:
+DEBUG	back/server.c	14;"	d	file:
+DEBUG	inc/server_sock.h	15;"	d
+HEADER	Makefile	/^HEADER = -Iinc -I\/usr\/include\/mysql$/;"	m
+ID_SIZE	back/iot_server.c	16;"	d	file:
+ID_SIZE	back/server.c	11;"	d	file:
+ID_SIZE	inc/server_sock.h	12;"	d
+MAX_CLNT	back/iot_server.c	15;"	d	file:
+MAX_CLNT	back/server.c	10;"	d	file:
+MAX_CLNT	inc/server_sock.h	11;"	d
+MSG_INFO	back/iot_server.c	/^}MSG_INFO;$/;"	t	typeref:struct:__anon1	file:
+NAME_SIZE	back/client.c	12;"	d	file:
+OBJECT	Makefile	/^OBJECT = server_sock$/;"	m
+SRC	Makefile	/^SRC = src\/$/;"	m
+TARGET	Makefile	/^TARGET = server$/;"	m
+buff	src/server.c	/^char buff[100];$/;"	v
+clnt_cnt	back/iot_server.c	/^int clnt_cnt=0;$/;"	v
+clnt_cnt	back/server.c	/^int clnt_cnt;$/;"	v
+clnt_cnt	inc/server_sock.h	/^int clnt_cnt;$/;"	v
+dbname	src/server.c	/^static char * dbname = "test";$/;"	v	file:
+error_handling	back/iot_server.c	/^void error_handling(char *msg)$/;"	f
+fd	back/iot_server.c	/^	int fd;$/;"	m	struct:__anon2	file:
+fd	back/iot_server.c	/^  	int fd;$/;"	m	struct:__anon1	file:
+fd	back/server.c	/^	int fd;$/;"	m	struct:__anon3	file:
+fd	inc/server_sock.h	/^	int fd;$/;"	m	struct:__anon4
+from	back/iot_server.c	/^	char *from;$/;"	m	struct:__anon1	file:
+gen_serv_sock	src/server_sock.c	/^int gen_serv_sock(const char * port){$/;"	f
+handle_clnt	back/iot_server.c	/^void * handle_clnt(void *arg)$/;"	f
+handle_clnt	back/server.c	/^void *handle_clnt(void *arg)$/;"	f
+handle_clnt	src/server_sock.c	/^void *handle_clnt(void *arg)$/;"	f
+host	src/server.c	/^static char * host = "localhost";$/;"	v	file:
+id	back/iot_server.c	/^	char id[ID_SIZE];$/;"	m	struct:__anon2	file:
+index	back/iot_server.c	/^	int index;;$/;"	m	struct:__anon2	file:
+index	back/server.c	/^	int index;$/;"	m	struct:__anon3	file:
+index	inc/server_sock.h	/^	int index;$/;"	m	struct:__anon4
+ip	back/iot_server.c	/^    char ip[20];$/;"	m	struct:__anon2	file:
+ip	back/server.c	/^	char ip[20];$/;"	m	struct:__anon3	file:
+ip	inc/server_sock.h	/^	char ip[20];$/;"	m	struct:__anon4
+len	back/iot_server.c	/^	int len;$/;"	m	struct:__anon1	file:
+log_file	back/iot_server.c	/^void log_file(char * msgstr)$/;"	f
+lp	Makefile	/^lp = -lpthread -lmysqlclient$/;"	m
+main	back/client.c	/^int main(int argc, char * argv[])$/;"	f
+main	back/iot_server.c	/^int main(int argc, char *argv[])$/;"	f
+main	back/server.c	/^int main(int argc, char *argv[])$/;"	f
+main	src/server.c	/^int main(int argc, char *argv[])$/;"	f
+msg	back/client.c	/^char msg[BUF_SIZE];$/;"	v
+msg	back/iot_server.c	/^	char *msg;$/;"	m	struct:__anon1	file:
+mutx	back/iot_server.c	/^pthread_mutex_t mutx;$/;"	v
+name	back/client.c	/^char name[NAME_SIZE]="[Default]";   \/\/ID$/;"	v
+pass	src/server.c	/^static char * pass = "root";$/;"	v	file:
+pw	back/iot_server.c	/^	char pw[ID_SIZE];$/;"	m	struct:__anon2	file:
+send_msg	back/iot_server.c	/^void send_msg(MSG_INFO * msg_info, CLIENT_INFO * first_client_info)$/;"	f
+sql_connect	src/server.c	/^int sql_connect(MYSQL* conn)$/;"	f
+sql_insert	src/server.c	/^int sql_insert(MYSQL *conn,const char * id, const char * passwd)$/;"	f
+sql_print_all_table	src/server.c	/^void sql_print_all_table(MYSQL* conn,MYSQL_RES* res_ptr,MYSQL_ROW* sqlrow)$/;"	f
+sql_store_table	src/server.c	/^MYSQL_RES *  sql_store_table(MYSQL *conn, MYSQL_RES *res_ptr)$/;"	f
+table1	src/server.c	/^static char * table1 = "clients";$/;"	v	file:
+to	back/iot_server.c	/^	char *to;$/;"	m	struct:__anon1	file:
+user	src/server.c	/^static char * user = "root";$/;"	v	file:

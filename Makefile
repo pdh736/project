@@ -2,17 +2,22 @@ CC:=gcc
 
 TARGET = server
 OBJECT = server_sock
+UTIL = util
 SRC = src/
-HEADER = -Iinc
+HEADER = -Iinc -I/usr/include/mysql
 
-lp = -lpthread
+lp = -lpthread -lmysqlclient
+
 
 all:$(TARGET)
-$(TARGET) : $(OBJECT).o $(TARGET).o
-	$(CC) -o $@ $(TARGET).o $(OBJECT).o $(lp)
+$(TARGET) : $(OBJECT).o $(TARGET).o $(UTIL).o
+	$(CC) -o $@ $^ $(lp)
 	rm -f *.o
 
 $(OBJECT).o : $(SRC)$(OBJECT).c
+	$(CC) -c -o $@ $< $(HEADER)
+
+$(UTIL).o : $(SRC)$(UTIL).c
 	$(CC) -c -o $@ $< $(HEADER)
 
 $(TARGET).o : $(SRC)$(TARGET).c

@@ -68,7 +68,5 @@ void *handle_clnt(void *arg)
 	}
 	close(client->fd);
 	clnt_cnt--;
-
-
 }
 

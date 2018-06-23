@@ -1,16 +1,106 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "server_sock.h"
 #include <pthread.h>
 #include <mysql/mysql.h>
+
+#include "server_sock.h"
+#include "util.h"
 
 static char * host = "localhost";
 static char * user = "root";
 static char * pass = "root";
 static char * dbname = "test";
+static char * table1 = "clients";
+char buff[100];
 
 
+
+int sql_connect(MYSQL* conn)
+{
+	if(!(mysql_real_connect(conn,host,user,pass,dbname,0,NULL,0)))
+	{
+		fprintf(stderr,"ERROR: %s,[%d[\n",mysql_error(conn),mysql_errno(conn));
+		return 0;
+	}
+	return 1;
+}
+
+int sql_insert(MYSQL *conn,const char * id, const char * passwd)
+{
+	int res;
+	//값 바꿔야 함
+	sprintf(buff,"insert into clients values (null,\'%s\',\'%s\')",id,passwd);
+	res = mysql_query(conn,buff);
+	if(!res){
+		printf("inserted %lu rows\n",(unsigned long)mysql_affected_rows(conn));
+		return 1;
+	}
+	else{
+		fprintf(stderr,"Insert nerror\n");
+		return 0;
+	}
+}
+
+MYSQL_RES * sql_store_table(MYSQL *conn,const char * query)
+{
+	int res;
+	res=mysql_query(conn,query);
+	if(!res){
+		return mysql_store_result(conn);
+	}
+	else{
+		printf("result store error!!\n");
+		return NULL;
+	}
+}
+
+void sql_print_all_table(MYSQL *conn, MYSQL_RES *res_ptr)
+{
+	MYSQL_ROW sqlrow;
+
+	sprintf(buff,"select * from clients");
+	if(res_ptr=sql_store_table(conn,buff)){
+		while( (sqlrow=mysql_fetch_row(res_ptr)) ){
+				printf("%10s %10s \n", sqlrow[1], sqlrow[2]);
+		}
+	}
+	else{
+		printf("table read error!!\n");
+	}
+	
+}
+
+int check_device(MYSQL *conn, MYSQL_RES *res_ptr,const char * id, const char * passwd)
+{
+	MYSQL_ROW sqlrow;
+
+	sprintf(buff,"select * from clients where id like \'%s\'",id);
+	if(res_ptr=sql_store_table(conn,buff)){
+		while(sqlrow=mysql_fetch_row(res_ptr)){
+			if(strcmp(id,sqlrow[1])==0){
+				printf("id correct!!\n");
+				if(strcmp(passwd,sqlrow[2])==0){
+					printf("password correct!!\n");
+					return 1;
+				}
+				else{
+					printf("pawssword incorrect!!\n");
+					return 0;
+				}
+
+			}
+			else{
+				printf("id incorrect!!!\n");
+				return 0;
+			}
+		}
+	}
+	else
+		printf("table read error!!\n");
+	return 0;
+
+}
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +114,7 @@ int main(int argc, char *argv[])
 	char *pToken;
 	char *pArray[ARR_CNT];
 	char id[10];
+	char passwd[10];
 	char msg[BUF_SIZE];
 	char buf[BUF_SIZE];
 	pthread_t t_id[MAX_CLNT] = {0};
@@ -33,64 +124,9 @@ int main(int argc, char *argv[])
 	//mysql-------------------------
 	MYSQL *conn;
 	MYSQL_RES *res_ptr;
-	MYSQL_ROW *sqlrow;
-	int res;
 	conn =mysql_init(NULL);
-	if(!(mysql_real_connect(conn,host,user,pass,dbname,0,NULL,0)))
-	{
-		fprintf(stderr,"ERROR: %s,[%d[\n",mysql_error(conn),mysql_errno(conn));
-		exit(1);
-	}
-	printf("Connection Successful!\n\n");
-/*
-	//insert into table		
-    res = mysql_query(conn, "insert into num(id,password) values (null,'hee')");
-	if(!res)
-		printf("inserted %1u rows\n",(unsigned long)mysql_affected_rows(conn));
-	else{
-		fprintf(stderr,"Insert nerror\n");
-	}
-*/
-	/*
-	//printf all table
-	res = mysql_query(conn,"select * from num");
-	if(!res){
-		res_ptr=mysql_store_result(conn);
-		if(res_ptr){
-			printf("Retrived %1u rows\n",(unsigned long)mysql_num_rows(res_ptr));
-			while((sqlrow=mysql_fetch_row(res_ptr))){
-				printf("%10s %10s \n", sqlrow[0], sqlrow[1]);
-			}
-		}
-		else{
-			sprintf(stderr,"store error\n");
-		}
-	}
-	else{
-		sprintf(stderr,"query error\n");
-	}
-	*/
-/*
-	//check text
-	res = mysql_query(conn,"select * from clients where id like \'avr1\'");
-	if(!res){
-		res_ptr=mysql_store_result(conn);
-		if(res_ptr){
-			while((sqlrow=mysql_fetch_row(res_ptr))){
-				printf("%10s %10s \n", sqlrow[1], sqlrow[2]);
-				if(strcmp("avr1",sqlrow[1])==0)printf("correct\n");
-			}
-		}
-		else{
-			fprintf(stderr,"store error\n");
-		}
-	}
-	else{
-		fprintf(stderr,"query error\n");
-	}
-	mysql_free_result(res_ptr);
-	mysql_close(conn);
-*/
+	if(sql_connect(conn))
+		printf("Connection Successful!\n\n");
 	//-------------------------------			
 
 	if(argc !=2){
@@ -117,44 +153,33 @@ int main(int argc, char *argv[])
 		str_len=read(clnt_sock,buf,sizeof(buf));
 		printf("%s",buf);
 
-		//db check
-		i=0;
-		pToken=strtok(buf,"[:]");
-		while(pToken !=NULL){
-			pArray[i]=pToken;
-	//		printf("%d  %s\n",i,pArray[i]);
-			if(++i >=ARR_CNT)	break;
-			pToken=strtok(NULL,"[:]");
-		}
+		//id password check
+		parsing(buf,pToken,pArray,"[:]");
 		strcpy(id,pArray[0]);
-		sprintf(buf,"select * from clients where id like \'%s\'",id);
-		printf("%s\n",buf);
-		res = mysql_query(conn,buf);
-		if(!res){
-			res_ptr=mysql_store_result(conn);
-			if(res_ptr){
-				while((sqlrow=mysql_fetch_row(res_ptr))){
-					printf("%10s %10s \n", sqlrow[1], sqlrow[2]);
-					if(strcmp(id,sqlrow[1])==0)printf("correct\n");
-				}
-			}
-			else{
-				fprintf(stderr,"store error\n");
-			}
+		strcpy(passwd,pArray[1]);
+		
+
+		if(check_device(conn,res_ptr,id,"avr1")){
+		
+			printf("client connect\n");
+			client[clnt_cnt].fd=clnt_sock;
+			strcpy(client[clnt_cnt].ip ,inet_ntoa(clnt_adr.sin_addr));
+			strcpy(client[clnt_cnt].id,id);
+			sprintf(msg,"New connected !!(ip:%s, sockcnt%d)\n",client[clnt_cnt].ip , clnt_sock);
+			temp=clnt_cnt++;
+			printf("%s",msg);
+			pthread_create(t_id+temp,NULL,handle_clnt,(void*)(client+temp));
+
+			pthread_detach(t_id[temp]);
+			close(clnt_sock);
 		}
 		else{
-			fprintf(stderr,"query error\n");
+			printf("check error!!\n");
 		}
 
-		printf("client connect\n");
-		client[clnt_cnt].fd=clnt_sock;
-		strcpy(client[clnt_cnt].ip ,inet_ntoa(clnt_adr.sin_addr)); 
-		sprintf(msg,"New connected !!(ip:%s, sockcnt%d)\n",client[clnt_cnt].ip , clnt_sock);
-		temp=clnt_cnt++;
-		printf("%s",msg);
-		pthread_create(t_id+temp,NULL,handle_clnt,(void*)(client+temp));
-
-		pthread_detach(t_id[temp]);
-
 	}
+	
+	mysql_free_result(res_ptr);
+	mysql_close(conn);
+	return 0;
 }

@@ -21,6 +21,7 @@ typedef struct{
 	int index;
 	int fd;
 	char ip[20];
+	char id[10];
 }CLIENT_INFO;
 
 
