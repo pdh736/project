@@ -16,7 +16,6 @@ void * send_msg(void * arg);
 void * recv_msg(void * arg);
 void error_handling(char * msg);
 
-char name[NAME_SIZE]="[Default]";   //ID
 char msg[BUF_SIZE];
 
 int main(int argc, char * argv[])
@@ -40,8 +39,15 @@ int main(int argc, char * argv[])
 	else
 		printf("asdfasdf\n");
 //	str_len=read(sock,msg,BUF_SIZE);
-	sprintf(msg,"ubuntu client\n");
+	sprintf(msg,"[avr2:avr2]\n");
 	write(sock,msg,strlen(msg));
-	//printf("%s",msg);
+	printf("send\n");
+	write(sock,"[server:serverhello]\n",21);
+	while(1){
+		str_len=read(sock,msg,sizeof(msg));
+		if(str_len<=0)	break;
 
+	}
+	//printf("%s",msg);
+	return 0;
 }

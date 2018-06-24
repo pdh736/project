@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "server_sock.h"
-
+#include "util.h"
 
 int gen_serv_sock(const char * port){
 	int serv_sock;
@@ -26,7 +26,6 @@ int gen_serv_sock(const char * port){
 	return serv_sock;
 }
 
-
 void *handle_clnt(void *arg)
 {
 	CLIENT_INFO *client=(CLIENT_INFO*)arg;
@@ -43,21 +42,16 @@ void *handle_clnt(void *arg)
 	while(1){
 		memset(msg,0,sizeof(msg));
 		str_len=read(client->fd,msg,sizeof(msg));
-		if(str_len<=0)
+		if(str_len <= 0){
+			printf("why??\n");
 			break;
-
-		msg[str_len]='\n';
-
-		pToken=strtok(msg,"[:]");
-		i=0;
-		while(pToken !=NULL){
-			printf("%s",pToken);
-			pArray[i]=pToken;
-			if(++i>=ARR_CNT)
-				break;
-			pToken=strtok(NULL,"[:]");
-
 		}
+		printf("test\n");
+		msg[str_len]='\n';
+		
+		parsing(msg,pToken,pArray,"[:]");
+	//avr test
+		printf("%s",pArray[1]);
 		if(flag==0){
 			printf("send msg\n");
 			sprintf(msg,"[avr]air#on\r\n");
@@ -66,7 +60,10 @@ void *handle_clnt(void *arg)
 		}
 
 	}
+	printf("close socket\n");
 	close(client->fd);
 	clnt_cnt--;
+
+	return 0;
 }
 
