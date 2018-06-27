@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #define BUF_SIZE 100
 #define MAX_CLNT 32
@@ -20,10 +21,13 @@ int clnt_cnt;
 typedef struct{
 	int index;
 	int fd;
+	pthread_t tid;
 	char ip[20];
 	char id[10];
 }CLIENT_INFO;
 
+CLIENT_INFO client[MAX_CLNT];
 
 int gen_serv_sock(const char * port);
 void *handle_clnt(void *arg);
+void reset_clientst(CLIENT_INFO *client);

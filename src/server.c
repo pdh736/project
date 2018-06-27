@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
 	char buf[BUF_SIZE];
 	pthread_t t_id[MAX_CLNT] = {0};
 	int flag=0;
-	CLIENT_INFO client[MAX_CLNT];
 	MYSQL *conn;
 	MYSQL_RES *res_ptr;
 
@@ -54,39 +53,56 @@ int main(int argc, char *argv[])
 			shutdown(clnt_sock , SHUT_WR);
 			continue;
 		}
+		
+		for(i=0;i<MAX_CLNT;i++){
+			if(strcmp(client[i].ip,inet_ntoa(clnt_adr.sin_addr))==0){
+				pthread_cancel(client[i].tid);
+				reset_clientst(client+i);
+				close(client[i].fd);
+				clnt_cnt--;
+				printf("cancel\n");
+				continue;
+			}
+		}
+
 		memset(buf,0,sizeof(buf));
 		str_len=read(clnt_sock,buf,sizeof(buf));
 		printf("%s",buf);
 
-		//id password check
+		//id password parsing
 		parsing(buf,pToken,pArray,"[:]");
 		strcpy(id,pArray[0]);
 		strcpy(passwd,pArray[1]);
-		
 
-		if(check_device(conn,res_ptr,id,passwd)){
-		
-			printf("client connect\n");
-			client[clnt_cnt].fd=clnt_sock;
-			strcpy(client[clnt_cnt].ip ,inet_ntoa(clnt_adr.sin_addr));
-			strcpy(client[clnt_cnt].id,id);
-			sprintf(msg,"New connected !!(ip:%s, sockcnt%d)\n",client[clnt_cnt].ip , clnt_sock);
-			temp=clnt_cnt++;
-			printf("%s",msg);
-			printf("%d connected \n",clnt_cnt);
-			pthread_create(t_id+temp,NULL,handle_clnt,(void*)(client+temp));
+		for(i=0;i<MAX_CLNT;i++){
+			if(client[i].fd==0){
+				if(check_device(conn,res_ptr,id,passwd)){
+					printf("client connect\n");
+					client[i].fd=clnt_sock;
+					client[i].tid=t_id[i];
+					strcpy(client[i].ip ,inet_ntoa(clnt_adr.sin_addr));
+					strcpy(client[i].id,id);
+					sprintf(msg,"New connected !!(ip:%s, sockcnt%d)\n",client[i].ip , clnt_sock);
+					//temp=clnt_cnt++;
+					clnt_cnt++;
+					printf("%s",msg);
+					printf("%d connected \n",clnt_cnt);
+					pthread_create(t_id+i,NULL,handle_clnt,(void*)(client+i));
 
-			pthread_detach(t_id[temp]);
+					pthread_detach(t_id[i]);
+				}
+				else{
+					printf("check error!!\n");
+					close(clnt_sock);
+				}
+				break;
+			}
 		}
-		else{
-			printf("check error!!\n");
-			close(clnt_sock);
-		}
-
 	}
 	
 	mysql_free_result(res_ptr);
 	mysql_close(conn);
+	close(serv_sock);
 	return 0;
 }
 
